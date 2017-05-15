@@ -15,7 +15,7 @@ metadata = MetaData(engine)
 baike_table =Table("t_baike",metadata,
                    Column("id",Integer,primary_key=True),
                    Column("title",String(50)),
-                   Column("url",String(100)),
+                   Column("url",String(200)),
                    Column("status",Integer))
 #创建表
 if not baike_table.exists():
