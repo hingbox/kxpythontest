@@ -115,3 +115,21 @@ print(soup.select('#link1'))
 
 print('属性查找')
 print(soup.select('a[class="sister"]'))
+
+
+def _const_1(name):
+    print "Hello,%s" % name
+def _const_2(name):
+    print "Hi,%s" % name
+def greet(name):
+    if len(name) > 3:
+        print _const_1(name)
+    else:
+        print _const_2(name)
+greet("nininini")
+
+print('========start=======')
+'''
+print('sdfsfasfsadfs')
+'''
+print('=========end=======')
