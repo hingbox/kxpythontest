@@ -48,7 +48,7 @@ def save_baike_jingji_info(url,title):
     else:
         print "itemexist:%s" % title
 
-def save_baike_jingji_d_info(url,title,baike_id,title_desc,content,tag):
+def save_baike_jingji_d_info(url,title,baike_id,title_desc,tag):
     content_table = Table("t_baike_jingji_d", metadata, autoload=True)
     r = content_table.select(and_(content_table.c.title == title)).execute()
     testrow = r.fetchone()
@@ -59,7 +59,7 @@ def save_baike_jingji_d_info(url,title,baike_id,title_desc,content,tag):
             url=url,
             title=title,
             title_desc=title_desc,
-            content=content,
+            content='',
             tag=tag,
             status=1
         )
@@ -86,13 +86,13 @@ def runPage():
         baike_id =1
         for item in tag_list:
             tag_lists = item.find_all("a")# 得到经济,金融的第一条数据  及进入到详情页面
-            #save_baike_jingji_info(tag_lists[0].get('href'),tag_lists[0].get_text())
+            save_baike_jingji_info(tag_lists[0].get('href'),tag_lists[0].get_text())
             #这个地方需要保存主表
             page_index =1
-            for i in range(1,2):
+            for i in range(1,18):
                 print('==========================='+format(i))
                 jingji_page(tag_lists[0].get('href')+'?limit=30&index={}&offset=30#gotoList'.format(str(i)),baike_id)#得到详情页的url 这个地方分页
-            #print(tag_lists[0].get('href'))#得到经济学url
+                print(tag_lists[0].get('href'))#得到经济学url
            # print(tag_lists[0].contents[1])
                 baike_id +=1
 
@@ -113,39 +113,30 @@ def jingji_page(jingji_page_url,baike_id):
         html = response.read()
         soup = BeautifulSoup(html,"html.parser")
         tag_list = soup.find_all("div","grid-list grid-list-spot",'li')#得到所有的li标签
-        for ii in tag_list:
-            cc = ii.find('div','photo','a')
-            for iii in cc:
-                href_rul = iii.get('href')
-                desc = iii.get('title')
+        #for ii in tag_list:
+            #cc = ii.find('div','photo','a')
+            #for iii in cc:
+                #href_url = iii.get('href')
+                #title = iii.get('title')
+
                 # jing_ji_d_page(href_url,desc,baike_id)
                 # save_baike_jingji_d_info(href_url,desc,baike_id)
-                print(iii.get('href'),iii.string)
+                #print(href_url,title)
 
         for item in tag_list:
             '''得到每个li下面的a标签'''
             tag_a = item.find_all('a')
             for items in tag_a:
                 href_url = items.get('href')
-                desc = items.string
-
-                href_url='http://baike.baidu.com'+href_url
-                #print(href_url, desc)
-
-                #jing_ji_d_page(href_url,desc,baike_id)
+                desc = items.get('title')
+                href_url = 'http://baike.baidu.com'+href_url
+                jing_ji_d_page(baike_id,href_url,desc)
                 #save_baike_jingji_d_info(href_url,desc,baike_id)
-                try:
-                    responses = urllib2.urlopen(href_url,timeout=5)
-                    htmls = responses.read()
-
-                except Exception,e:
-                    print e
-                #print (href_url,'==',desc)
 
     except Exception,e:
         print e
 
-def jing_ji_d_page(href_url,desc,baike_id):
+def jing_ji_d_page(baike_id,href_url,desc):
     req_header = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
         'Accept': 'text/html;q=0.9,*/*;q=0.8',
@@ -159,7 +150,8 @@ def jing_ji_d_page(href_url,desc,baike_id):
         html = response.read()
         soup = BeautifulSoup(html,'html.parser')
         title_desc = soup.find('div',"lemma-summary")#得到title描述
-        print(title_desc.find('div','para').get_text())
+        descs = title_desc.find('div', 'para').get_text()#
+        #print(title_desc.find('div','para').get_text())
 
         #content = soup.findAll(attrs={"class": "lemma-summary"})
         #print(content[0].string)
@@ -173,14 +165,14 @@ def jing_ji_d_page(href_url,desc,baike_id):
         cc= soup.select('#open-tag-item')
         for item in cc:
             a = item.findAll('span')
-            content =''
+            tag =''
             for items in a:
-                content = content + items.get_text()#得到tag
+                tag = tag + items.get_text()+','#得到tag
             #print (content)
 
 
-        #print(href_url,tag)
-        #save_baike_jingji_d_info(href_url, desc, baike_id)
+        #print(href_url,desc,baike_id,title_desc,tag)
+        save_baike_jingji_d_info(href_url,desc,baike_id,descs,tag)
     except Exception,e:
         print e
 
