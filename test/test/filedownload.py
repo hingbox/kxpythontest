@@ -149,6 +149,10 @@ if __name__ == '__main__':
     sys.stderr = stderr
     sys.setdefaultencoding('utf8')
     #runPage()
+
+    # 城市信息
+    for i in range(1, 10):
+       runOtherPage("http://pinyin.sogou.com/dict/cate/index/167/default/",i)
     #自然科学
     # for i in range(1, 32):
     #   runOtherPage("http://pinyin.sogou.com/dict/cate/index/1/default/",i)

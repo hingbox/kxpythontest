@@ -2,6 +2,7 @@
 # _*_ coding:utf-8 _*_ //为了告诉python解释器，按照utf-8编码读取源代码，否则，你在源代码中写的中文输出可能会由乱码
 import struct
 import sys
+import os
 import binascii
 import pdb
 #搜狗的scel词库就是保存的文本的unicode编码，每两个字节一个字符（中文汉字或者英文字母）
@@ -148,7 +149,8 @@ def deal(file_name):
 
     if data[0:12] != "\x40\x15\x00\x00\x44\x43\x53\x01\x01\x00\x00\x00":
         print "确认你选择的是搜狗(.scel)词库?"
-        sys.exit(0)
+        return
+        #sys.exit(0)
     # pdb.set_trace()
 
     print "词库名：", byte2str(data[0x130:0x338])  # .encode('GB18030')
@@ -159,22 +161,43 @@ def deal(file_name):
     getPyTable(data[startPy:startChinese])
     getChinese(data[startChinese:])
 
+def GetFileFromThisRootDir(dir,ext = None):
+  allfiles = []
+  needExtFilter = (ext != None)
+  for root,dirs,files in os.walk(dir):
+    for filespath in files:
+      filepath = os.path.join(root, filespath)
+      extension = os.path.splitext(filepath)[1][1:]
+      if needExtFilter and extension in ext:
+        allfiles.append(filepath)
+      elif not needExtFilter:
+        allfiles.append(filepath)
+  return allfiles
 
+def eachFile(filepath):
+    pathDir = os.listdir(filepath)
+    for allDir in pathDir:
+        child = os.path.join('%s%s' % (filepath, allDir))
+        print child.decode('gbk')  # .decode('gbk')是解决中文显示乱码问题
+
+def readfile(filepath):
+    pathDir = os.listdir(filepath)
+    for allDir in pathDir:
+        child = os.path.join('%s%s' % (filepath, allDir))
+        child.decode('gbk')  # .decode('gbk')是解决中文显示乱码问题
 if __name__ == '__main__':
 
     # 将要转换的词库添加在这里就可以了
-    o = ['E:\\ciku\\aa.scel','E:\\ciku\\bb.scel','E:\\ciku\\cc.scel',]
+    pathDir = os.listdir("E:\\ciku\\download\\")
+    for allDir in pathDir:
+        child = os.path.join('%s%s' % ("E:\\ciku\\download\\", allDir))
+        deal(child.decode('gbk'))  # .decode('gbk')是解决中文显示乱码问题
+        #保存结果
+        f = open('E:\\ciku\\txt\\sougou.txt', 'w')
+        for count, py, word in GTable:
+            # GTable保存着结果，是一个列表，每个元素是一个元组(词频,拼音,中文词组)，有需要的话可以保存成自己需要个格式
+            # 我没排序，所以结果是按照上面输入文件的顺序
+            f.write(unicode('{%(count)s}' % {'count': count} + py + ' ' + word).encode('GB18030'))  # 最终保存文件的编码，可以自给改
+            f.write('\n')
+        f.close()
 
-    for f in o:
-        deal(f)
-
-    #print sys.argv[1]
-    #deal('E:\\初中物理术语.scel')
-    # 保存结果
-    f = open('E:\\ciku\\sougou.txt', 'w')
-    for count, py, word in GTable:
-        # GTable保存着结果，是一个列表，每个元素是一个元组(词频,拼音,中文词组)，有需要的话可以保存成自己需要个格式
-        # 我没排序，所以结果是按照上面输入文件的顺序
-        f.write(unicode('{%(count)s}' % {'count': count} + py + ' ' + word).encode('GB18030'))  # 最终保存文件的编码，可以自给改
-        f.write('\n')
-    f.close()
