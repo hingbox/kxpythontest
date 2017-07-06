@@ -109,6 +109,36 @@ def runPage():
 
     except Exception,e:
         print e
+
+#得到自然科学信息
+def runOtherPage(url,i):
+    page_url = url+format(i)  # 自然科学
+    req_header = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+        'Accept': 'text/html;q=0.9,*/*;q=0.8',
+        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding': 'gzip',
+        'Connection': 'close',
+        'Referer': None  # 注意如果依然不能抓取的话，这里可以设置抓取网站的host
+    }
+    try:
+        web_content = urllib2.urlopen(page_url,timeout=5)
+        data = web_content.read()
+        soup = BeautifulSoup(data, "html.parser")
+        div = soup.find_all("",re.compile("^a"),class_="dict_detail_block")
+        for divs in div:
+            title = divs.findAll("",class_="detail_title")
+            for titles in title:
+                print 'title',titles.string
+            href = divs.findAll("", class_="dict_dl_btn")
+            for hrefs in href:
+                print 'href', hrefs.find("a").get("href")
+            url = hrefs.find("a").get("href")
+            r = requests.get(url)
+            with open('E:\\ciku\\download\\' + titles.string + '.scel', 'wb')as code:
+                code.write(r.content)
+    except Exception,e:
+        print e
 if __name__ == '__main__':
     stdout = sys.stdout
     stdin = sys.stdin
@@ -118,4 +148,37 @@ if __name__ == '__main__':
     sys.stdin = stdin
     sys.stderr = stderr
     sys.setdefaultencoding('utf8')
-    runPage()
+    #runPage()
+    #自然科学
+    # for i in range(1, 32):
+    #   runOtherPage("http://pinyin.sogou.com/dict/cate/index/1/default/",i)
+    #社会科学
+    # for i in range(1, 51):
+    #   runOtherPage("http://pinyin.sogou.com/dict/cate/index/76/default/",i)
+    #工程应用
+    # for i in range(1, 83):
+    #   runOtherPage("http://pinyin.sogou.com/dict/cate/index/96/default/", i)
+    #农林应用
+    # for i in range(1, 10):
+    #   runOtherPage("http://pinyin.sogou.com/dict/cate/index/127/default/", i)
+    #医学医药
+    # for i in range(1, 32):
+    #   runOtherPage("http://pinyin.sogou.com/dict/cate/index/132/default/", i)
+    #电子游戏
+    # for i in range(1, 114):
+    #     runOtherPage("http://pinyin.sogou.com/dict/cate/index/436/default/", i)
+    #艺术设计
+    # for i in range(1, 20):
+    #     runOtherPage("http://pinyin.sogou.com/dict/cate/index/154/default/", i)
+    #生活百科
+    # for i in range(1, 85):
+    #     runOtherPage("http://pinyin.sogou.com/dict/cate/index/389/default/", i)
+    # 运动休闲
+    # for i in range(1, 18):
+    #     runOtherPage("http://pinyin.sogou.com/dict/cate/index/367/default/", i)
+    # 人文科学
+    # for i in range(1, 108):
+    #     runOtherPage("http://pinyin.sogou.com/dict/cate/index/367/default/", i)
+    # 娱乐休闲
+    # for i in range(1, 162):
+    #     runOtherPage("http://pinyin.sogou.com/dict/cate/index/403/default/", i)
