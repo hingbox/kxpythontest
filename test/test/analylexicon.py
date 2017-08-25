@@ -188,12 +188,12 @@ def readfile(filepath):
 if __name__ == '__main__':
 
     # 将要转换的词库添加在这里就可以了
-    pathDir = os.listdir("E:\\ciku\\download\\")
+    pathDir = os.listdir("E:\\ciku\\new\\")
     for allDir in pathDir:
-        child = os.path.join('%s%s' % ("E:\\ciku\\download\\", allDir))
+        child = os.path.join('%s%s' % ("E:\\ciku\\new\\", allDir))
         deal(child.decode('gbk'))  # .decode('gbk')是解决中文显示乱码问题
         #保存结果
-        f = open('E:\\ciku\\txt\\sougou.txt', 'w')
+        f = open('E:\\ciku\\new\\new.txt', 'w')
         for count, py, word in GTable:
             # GTable保存着结果，是一个列表，每个元素是一个元组(词频,拼音,中文词组)，有需要的话可以保存成自己需要个格式
             # 我没排序，所以结果是按照上面输入文件的顺序
